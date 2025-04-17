@@ -154,7 +154,8 @@ def recommend(feature_list, features):
         similarity.append(cosine_similarity(features.reshape(1, -1), feature.reshape(1, -1))[0][0])
     
     index_pos = sorted(list(enumerate(similarity)), reverse=True, key=lambda x: x[1])[0][0]
-    return index_pos
+    similarity_score = similarity[index_pos]
+    return index_pos, similarity_score
 
 if feature_list is not None and filenames is not None:
     if uploaded_img is not None:
@@ -164,16 +165,17 @@ if feature_list is not None and filenames is not None:
                 try:
                     features = extract_features(os.path.join('uploads', uploaded_img.name), model, detector)
                     st.success("Features extracted successfully!")
-                    index_pos = recommend(feature_list, features)
+                    index_pos, similarity_score = recommend(feature_list, features)
                     predicted_actor = " ".join(filenames[index_pos].split('\\')[1].split('_'))
+                    similarity_percentage = round(similarity_score * 100, 2)
                     st.subheader("Results")
                     col1, col2 = st.columns(2)
                     with col1:
                         st.info("The image you Uploaded: ")
                         st.image(display_img, caption='Your Uploaded Image', use_column_width=True)
                     with col2:
-                        st.success(f"Congratulations! Your face matches with {predicted_actor}")
-                        st.image(filenames[index_pos], width=300, caption=predicted_actor)
+                        st.success(f"Congratulations! Your face matches with {predicted_actor} with a similarity of {similarity_percentage}%")
+                        st.image(filenames[index_pos], width=300, caption=f"{predicted_actor} ({similarity_percentage}%)")
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
 else:
