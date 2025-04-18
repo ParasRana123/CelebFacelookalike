@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Celebrity Lookalike</title>
+</head>
+<body>
+    <h1>Celebrity Lookalike</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if uploaded_image %}
+        <h2>Your Uploaded Image</h2>
+        <img src="{{ url_for('static', filename=uploaded_image) }}" width="300">
+
+        <h2>Matched Celebrity</h2>
+        <img src="{{ url_for('static', filename=match_image) }}" width="300">
+        <p><strong>{{ predicted_actor }}</strong> - {{ similarity }}% match</p>
+    {% endif %}
+</body>
+</html>
