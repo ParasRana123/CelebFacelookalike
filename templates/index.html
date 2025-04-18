@@ -3,26 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <title>Celebrity Lookalike</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+<style>
+    body {
+    background: linear-gradient(to right, #0f0f0f, #1a1a1a);
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.container {
+    padding: 3rem 1rem;
+    max-width: 800px;
+    margin: auto;
+}
+
+.title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: #ff4b4b;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #cccccc;
+    margin-bottom: 2rem;
+}
+
+.upload-form input[type="file"] {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 12px 24px;
+    background-color: #ff4b4b;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #e84343;
+    transform: scale(1.05);
+}
+
+.face-image {
+    margin: 10px;
+    border-radius: 15px;
+    border: 3px solid #ff4b4b;
+    box-shadow: 0 0 10px rgba(255, 75, 75, 0.5);
+}
+
+.match-result {
+    font-size: 1.3rem;
+    margin-top: 10px;
+    color: #ffcc70;
+    font-weight: bold;
+}
+
+.error {
+    color: #ff4b4b;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.result-section {
+    margin-top: 3rem;
+}
+</style>
 <body>
-    <h1>Celebrity Lookalike</h1>
+    <div class="container">
+        <h1 class="title">Celebrity Lookalike Detector</h1>
+        <p class="subtitle">Find out which celebrity you resemble the most!</p>
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
 
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" required>
-        <button type="submit">Upload</button>
-    </form>
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Find My Lookalike</button>
+        </form>
 
-    {% if uploaded_image %}
-        <h2>Your Uploaded Image</h2>
-        <img src="{{ url_for('static', filename=uploaded_image) }}" width="300">
+        {% if uploaded_image %}
+            <div class="result-section">
+                <h2>Your Uploaded Image</h2>
+                <img src="{{ url_for('static', filename=uploaded_image) }}" width="300" class="face-image">
 
-        <h2>Matched Celebrity</h2>
-        <img src="{{ url_for('static', filename=match_image) }}" width="300">
-        <p><strong>{{ predicted_actor }}</strong> - {{ similarity }}% match</p>
-    {% endif %}
+                <h2>Your Celebrity Lookalike</h2>
+                <img src="{{ url_for('static', filename=match_image) }}" width="300" class="face-image">
+                <p class="match-result"><strong>{{ predicted_actor }}</strong> - {{ similarity }}% match</p>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
