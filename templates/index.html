@@ -93,15 +93,20 @@ button:hover {
         </form>
 
         {% if uploaded_image %}
-            <div class="result-section">
-                <h2>Your Uploaded Image</h2>
-                <img src="{{ url_for('static', filename=uploaded_image) }}" width="300" class="face-image">
+    <div class="result-section">
+        <h2>Your Uploaded Image</h2>
+        <img src="{{ url_for('static', filename=uploaded_image) }}" width="300" class="face-image">
 
-                <h2>Your Celebrity Lookalike</h2>
-                <img src="{{ url_for('static', filename=match_image) }}" width="300" class="face-image">
-                <p class="match-result"><strong>{{ predicted_actor }}</strong> - {{ similarity }}% match</p>
+        <h2>Top 5 Celebrity Lookalikes</h2>
+        {% for result in match_results %}
+            <div>
+                <img src="{{ url_for('static', filename=result.image) }}" width="200" class="face-image">
+                <p class="match-result"><strong>{{ result.name }}</strong> - {{ result.similarity }}% match</p>
             </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
     </div>
 </body>
 </html>
