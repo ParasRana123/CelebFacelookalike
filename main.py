@@ -44,9 +44,26 @@ def extract_features(img_path):
 
 def recommend(features, top_n=5):
     similarity = [cosine_similarity(features.reshape(1, -1), f.reshape(1, -1))[0][0] for f in feature_list]
-    top_indices = np.argsort(similarity)[-top_n:][::-1]
-    top_scores = [similarity[i] for i in top_indices]
-    return top_indices, top_scores
+    sorted_indices = np.argsort(similarity)[::-1]
+
+    seen_names = set()
+    unique_indices = []
+    unique_scores = []
+
+    for idx in sorted_indices:
+        matched_path = filenames[idx].replace("\\", "/")
+        matched_filename = os.path.basename(matched_path)
+        name = os.path.splitext(matched_filename)[0]
+        name = re.sub(r'[\._]?\d+$', '', name).replace('_', ' ').strip().lower()
+
+        if name not in seen_names:
+            seen_names.add(name)
+            unique_indices.append(idx)
+            unique_scores.append(similarity[idx])
+        if len(unique_indices) == top_n:
+            break
+
+    return unique_indices, unique_scores
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
