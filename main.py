@@ -42,10 +42,11 @@ def extract_features(img_path):
     result = model.predict(preprocessed_img).flatten()
     return result
 
-def recommend(features):
+def recommend(features, top_n=5):
     similarity = [cosine_similarity(features.reshape(1, -1), f.reshape(1, -1))[0][0] for f in feature_list]
-    index = np.argmax(similarity)
-    return index, similarity[index]
+    top_indices = np.argsort(similarity)[-top_n:][::-1]
+    top_scores = [similarity[i] for i in top_indices]
+    return top_indices, top_scores
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -63,27 +64,32 @@ def index():
 
         try:
             features = extract_features(upload_path)
-            idx, score = recommend(features)
+            indices, scores = recommend(features)
 
-            # Path to matched image (from data/)
-            matched_path = filenames[idx].replace("\\", "/")  # normalize
-            matched_filename = os.path.basename(matched_path)
-            match_dest_path = os.path.join(app.config['MATCH_FOLDER'], matched_filename)
+            match_results = []
 
-            # Copy matched image into static/matches/
-            shutil.copy(matched_path, match_dest_path)
+            for idx, score in zip(indices, scores):
+                matched_path = filenames[idx].replace("\\", "/")
+                matched_filename = os.path.basename(matched_path)
+                match_dest_path = os.path.join(app.config['MATCH_FOLDER'], matched_filename)
 
-            # Predict name
-            predicted_actor = os.path.splitext(matched_filename)[0]
-            predicted_actor = re.sub(r'[\._]?\d+$', '', predicted_actor)  # Remove trailing dot/underscore + numbers
-            predicted_actor = predicted_actor.replace('_', ' ')
-            similarity = round(score * 100, 2)
+                if not os.path.exists(match_dest_path):
+                    shutil.copy(matched_path, match_dest_path)
+
+                predicted_actor = os.path.splitext(matched_filename)[0]
+                predicted_actor = re.sub(r'[\._]?\d+$', '', predicted_actor)
+                predicted_actor = predicted_actor.replace('_', ' ')
+                similarity = round(score * 100, 2)
+
+                match_results.append({
+                    'image': f'matches/{matched_filename}',
+                    'name': predicted_actor,
+                    'similarity': similarity
+                })
 
             return render_template('index.html',
                                    uploaded_image=f'uploads/{filename}',
-                                   match_image=f'matches/{matched_filename}',
-                                   predicted_actor=predicted_actor,
-                                   similarity=similarity)
+                                   match_results=match_results)
 
         except Exception as e:
             return render_template('index.html', error=f"Error: {str(e)}")
