@@ -5,9 +5,9 @@ A web application that detects faces from user-uploaded images and matches them 
 ## Features
 
 -  Upload any face image and get matched with a celebrity lookalike
--  Accurate face detection using `**MTCNN**`
--  Face recognition using `**ResNet50-based VGGFace model**`
--  Real-time similarity scoring with `**cosine similarity**`
+-  Accurate face detection using `MTCNN`
+-  Face recognition using `ResNet50-based VGGFace model`
+-  Real-time similarity scoring with `cosine similarity`
 -  Smooth and responsive user interface for interactive experience  
 
 ## Tech Stack
@@ -82,8 +82,8 @@ jupyter nbconvert --to notebook --feature.extractor.ipynb --inplace
 python main.py
 ```
 
-   OR:
-   **Start the streamlit application**
+   **OR**:
+   **Use the streamlit server(Optional)**
    ```bash
    strealit run app.py
    ```
