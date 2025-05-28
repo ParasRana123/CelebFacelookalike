@@ -5,16 +5,16 @@ A web application that detects faces from user-uploaded images and matches them 
 ## Features
 
 -  Upload any face image and get matched with a celebrity lookalike
--  Accurate face detection using **MTCNN**
--  Face recognition using **ResNet50-based VGGFace model**
--  Real-time similarity scoring with **cosine similarity**
+-  Accurate face detection using `**MTCNN**`
+-  Face recognition using `**ResNet50-based VGGFace model**`
+-  Real-time similarity scoring with `**cosine similarity**`
 -  Smooth and responsive user interface for interactive experience  
 
 ## Tech Stack
 
 - **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Flask, Streamlit
-- **Deep Learning**: Keras, TensorFlow, VGGFace, MTCNN
+- **Deep Learning Tools**: Keras, TensorFlow, VGGFace, MTCNN
 - **Similarity Measure**: Cosine similarity
 
 ## Project Structure
@@ -45,40 +45,48 @@ git clone [repository-url]
 cd face
 ```
 
-2. **Install all the requirements necessary for this project**
+2. **Create and activate python virtual environment**
+
+```bash
+conda create -p venv python==3.8.0 -y
+activate venv/
+```
+
+3. **Install all the requirements necessary for this project**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Install the Frontend dependencies**
+4. **Install the Jupyter Notebook**
 
 ```bash
-cd frontend
-npm install
+pip install notebook
 ```
 
-4. **Set up environment varaibles**
-
-> **Note**: Create the .env file in the be folder.
+5. **Run the `feature_extractor1.ipynb` to make `filenames.pkl`**
 
 ```bash
-echo. > .env
+jupyter nbconvert --to notebook --feature.extractor1.ipynb --inplace
 ```
 
-5. **Start the backend server**
+6. **Then run the `feature_extractor1.ipynb` to make `filenames.pkl`**
 
 ```bash
-cd be
-npm run dev
+jupyter nbconvert --to notebook --feature.extractor.ipynb --inplace
 ```
 
-6. **Start the frontend application**
+7. **Start the flask application**
 
 ```bash
-cd frontend
-npm run dev
+python main.py
 ```
+
+   OR:
+   **Start the streamlit application**
+   ```bash
+   strealit run app.py
+   ```
 
 ## Contributing
 
