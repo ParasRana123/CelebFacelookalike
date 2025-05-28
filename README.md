@@ -90,8 +90,7 @@ mkdir matches
 python main.py
 ```
 
-   **OR**
-   **Use the streamlit server (Optional)**
+   **You can also use the streamlit server (Optional)**
    ```bash
    strealit run app.py
    ```
