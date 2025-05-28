@@ -70,7 +70,7 @@ pip install notebook
 jupyter nbconvert --to notebook --feature.extractor1.ipynb --inplace
 ```
 
-6. **Then run the `feature_extractor1.ipynb` to make `filenames.pkl`**
+6. **Then run the `feature_extractor.ipynb` to make `embedding.pkl`**
 
 ```bash
 jupyter nbconvert --to notebook --feature.extractor.ipynb --inplace
