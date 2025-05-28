@@ -12,47 +12,43 @@ A web application that detects faces from user-uploaded images and matches them 
 
 ## Tech Stack
 
-- **AI Model**: LLAMA
-- **Frontend**: React, HTML, CSS, TypeScript
-- **Backend**: Node.js, Express.js
-- **Code Execution**: Web Containers
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Flask, Streamlit
+- **Deep Learning**: Keras, TensorFlow, VGGFace, MTCNN
+- **Similarity Measure**: Cosine similarity
 
 ## Project Structure
 
 ```bash
-├── backend/
-│   ├── src/              
-│        ├── defaults/     # Default prompts for node and react
-│            ├── react.ts
-│            └── node.ts
-│   ├── index.ts           # All main routes in this file
-│   ├── prompts.ts         # format in which the response returned
-│   ├── constants.ts       # Utility file
-│   └── stripindents.ts    # Utility file
-├── frontend/
-│   ├── components/        # Contains various components
-│   ├── hooks/             # Web Container config file
-│   ├── pages/             # Contains landing page
-│   └── types/             # Defined the types of file structure
+├── static/            
+│   ├── css/        # All CSS stylings in this file
+│   ├── uploads/    # Contains user Uploaded images
+│   └── matches/    # Matched images for the user uplaoded images
+├── templates/
+│   └── index.html  # Contains all the frontend HTML code
+├── main.py         # Flask backend code
+├── app.py          # Streamlit backend code
+├── feature_extractor1.ipynb   # Useful for making filenames.pkl
+├── feature_extractor.ipynb    # Useful for making embedding.pkl
+├── requirements.txt           # Contains all the requirements
 └── README.md
 ```
 
 ## Installation
 
-> **Note**: Ensure Node.js (v16+) is installed on your machine.
+> **Note**: Python Version greater than 3.7 needed.
 
 1. **Clone the Repository**
 
 ```bash
 git clone [repository-url]
-cd boult.new
+cd face
 ```
 
-2. **Install the Backend dependencies**
+2. **Install all the requirements necessary for this project**
 
 ```bash
-cd be
-npm install
+pip install -r requirements.txt
 ```
 
 3. **Install the Frontend dependencies**
