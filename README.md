@@ -76,14 +76,22 @@ jupyter nbconvert --to notebook --feature.extractor1.ipynb --inplace
 jupyter nbconvert --to notebook --feature.extractor.ipynb --inplace
 ```
 
-7. **Start the flask application**
+7. **Make the `uploads` and  `matches` inside `static` folder**
+
+```bash
+cd static
+mkdir uploads
+mkdir matches
+```
+
+8. **Start the flask application**
 
 ```bash
 python main.py
 ```
 
-   **OR**:
-   **Use the streamlit server(Optional)**
+   **OR**
+   **Use the streamlit server (Optional)**
    ```bash
    strealit run app.py
    ```
