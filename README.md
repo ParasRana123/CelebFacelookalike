@@ -92,7 +92,7 @@ python main.py
 
    **You can also use the streamlit server (Optional)**
    ```bash
-   strealit run app.py
+   streamlit run app.py
    ```
 
 ## Contributing
