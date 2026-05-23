@@ -17,14 +17,14 @@ import gdown
 
 if not os.path.exists("embedding.pkl"):
     gdown.download(
-        "https://drive.google.com/uc?id=YOUR_EMBEDDING_FILE_ID",
+        "https://drive.google.com/uc?id=1YAR1DOUCF7BTkhrrDjRbWRVgDXJdg5AB",
         "embedding.pkl",
         quiet=False
     )
 
 if not os.path.exists("filenames.pkl"):
     gdown.download(
-        "https://drive.google.com/uc?id=YOUR_FILENAMES_FILE_ID",
+        "https://drive.google.com/uc?id=1SyTGMYqfWm5eKKIoLBO9kfDNCUh__U4v",
         "filenames.pkl",
         quiet=False
     )
