@@ -1,0 +1,187 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from PIL import Image
+import os
+import cv2
+from mtcnn import MTCNN
+import numpy as np
+from keras_vggface.utils import preprocess_input
+from keras_vggface.vggface import VGGFace
+import pickle
+from sklearn.metrics.pairwise import cosine_similarity
+from werkzeug.utils import secure_filename
+import shutil
+import re
+
+app = Flask(__name__)
+CORS(app)
+
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+app.config['MATCH_FOLDER'] = os.path.join('static', 'matches')
+
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['MATCH_FOLDER'], exist_ok=True)
+
+detector = MTCNN()
+
+model = VGGFace(
+    model='resnet50',
+    include_top=False,
+    input_shape=(224, 224, 3),
+    pooling='avg'
+)
+
+# Load embeddings
+with open('embedding.pkl', 'rb') as f:
+    feature_list = pickle.load(f)
+
+with open('filenames.pkl', 'rb') as f:
+    filenames = pickle.load(f)
+
+
+def extract_features(img_path):
+    img = cv2.imread(img_path)
+
+    results = detector.detect_faces(img)
+
+    if not results:
+        raise ValueError("No face detected")
+
+    x, y, width, height = results[0]['box']
+
+    face = img[y:y + height, x:x + width]
+
+    image = Image.fromarray(face).resize((224, 224))
+
+    face_array = np.asarray(image).astype('float64')
+
+    expanded_img = np.expand_dims(face_array, axis=0)
+
+    preprocessed_img = preprocess_input(expanded_img)
+
+    result = model.predict(preprocessed_img).flatten()
+
+    return result
+
+
+def recommend(features, top_n=5):
+    similarity = [
+        cosine_similarity(
+            features.reshape(1, -1),
+            f.reshape(1, -1)
+        )[0][0]
+        for f in feature_list
+    ]
+
+    sorted_indices = np.argsort(similarity)[::-1]
+
+    seen_names = set()
+
+    unique_indices = []
+    unique_scores = []
+
+    for idx in sorted_indices:
+
+        matched_path = filenames[idx].replace("\\", "/")
+
+        matched_filename = os.path.basename(matched_path)
+
+        name = os.path.splitext(matched_filename)[0]
+
+        name = re.sub(r'[\._]?\d+$', '', name)\
+            .replace('_', ' ')\
+            .strip()\
+            .lower()
+
+        if name not in seen_names:
+            seen_names.add(name)
+            unique_indices.append(idx)
+            unique_scores.append(similarity[idx])
+
+        if len(unique_indices) == top_n:
+            break
+
+    return unique_indices, unique_scores
+
+
+@app.route('/recognize', methods=['POST'])
+def recognize():
+
+    if 'image' not in request.files:
+        return jsonify({
+            "error": "No file uploaded"
+        }), 400
+
+    file = request.files['image']
+
+    if file.filename == '':
+        return jsonify({
+            "error": "No file selected"
+        }), 400
+
+    filename = secure_filename(file.filename)
+
+    upload_path = os.path.join(
+        app.config['UPLOAD_FOLDER'],
+        filename
+    )
+
+    file.save(upload_path)
+
+    try:
+        features = extract_features(upload_path)
+
+        indices, scores = recommend(features)
+
+        match_results = []
+
+        for idx, score in zip(indices, scores):
+
+            matched_path = filenames[idx].replace("\\", "/")
+
+            matched_filename = os.path.basename(matched_path)
+
+            match_dest_path = os.path.join(
+                app.config['MATCH_FOLDER'],
+                matched_filename
+            )
+
+            if not os.path.exists(match_dest_path):
+                shutil.copy(matched_path, match_dest_path)
+
+            predicted_actor = os.path.splitext(
+                matched_filename
+            )[0]
+
+            predicted_actor = re.sub(
+                r'[\._]?\d+$',
+                '',
+                predicted_actor
+            )
+
+            predicted_actor = predicted_actor.replace(
+                '_',
+                ' '
+            )
+
+            similarity = round(score * 100, 2)
+
+            match_results.append({
+                "image": f"http://127.0.0.1:5000/static/matches/{matched_filename}",
+                "name": predicted_actor,
+                "similarity": similarity
+            })
+
+        return jsonify({
+            "uploaded_image": f"http://127.0.0.1:5000/static/uploads/{filename}",
+            "matches": match_results
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
