@@ -13,6 +13,22 @@ from werkzeug.utils import secure_filename
 import shutil
 import re
 
+import gdown
+
+if not os.path.exists("embedding.pkl"):
+    gdown.download(
+        "https://drive.google.com/uc?id=YOUR_EMBEDDING_FILE_ID",
+        "embedding.pkl",
+        quiet=False
+    )
+
+if not os.path.exists("filenames.pkl"):
+    gdown.download(
+        "https://drive.google.com/uc?id=YOUR_FILENAMES_FILE_ID",
+        "filenames.pkl",
+        quiet=False
+    )
+
 app = Flask(__name__)
 CORS(app)
 
@@ -183,4 +199,4 @@ def recognize():
         }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)

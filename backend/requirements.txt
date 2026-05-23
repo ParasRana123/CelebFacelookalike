@@ -11,3 +11,5 @@ keras-applications==1.0.8
 werkzeug
 h5py
 scipy
+gdown
+opencv-python-headless
